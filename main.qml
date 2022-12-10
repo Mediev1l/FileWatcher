@@ -10,12 +10,25 @@ Window {
 
     FileDialogComponent {
         id: fileDialogComponent
-        width: 500
+        width: mainWindow.width * 0.9
 
         anchors {
             top: parent.top
             horizontalCenter: parent.horizontalCenter
             topMargin: 20
         }
+    }
+
+    FileTrackerComponent {
+        id: fileTrackerComponent
+        width: mainWindow.width * 0.9
+        height: mainWindow.height * 0.3
+
+        anchors {
+            top: fileDialogComponent.bottom
+            horizontalCenter: parent.horizontalCenter
+            topMargin: 20
+        }
+
     }
 }

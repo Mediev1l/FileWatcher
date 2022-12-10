@@ -12,20 +12,21 @@ Item {
     }
 
     Row {
-        anchors.centerIn: parent
+        width: parent.width
+        anchors.verticalCenter: parent.verticalCenter
         spacing: 3
 
         TextField {
             id: fileDialogTextField
             text: "Add path to watch"
-            anchors.verticalCenter: parent.verticalCenter
+//            anchors.verticalCenter: parent.verticalCenter
             background: Rectangle {
                 radius: 7
                 color: "white"
                 border.color: "black"
                 border.width: 1
             }
-            width: mainWindow.width * 0.7
+            width: parent.width - 70
             height: 20
 
             MouseArea {
