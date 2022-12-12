@@ -2,9 +2,11 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.3
 
+import FileWatcher
+
 Item {
     Text {
-        id:testText
+        id:trackerTitle
         text: qsTr("Watched paths")
         height: 20
         width: 5
@@ -17,18 +19,23 @@ Item {
         border.width: 1
         border.color: "black"
         radius: 5
-        anchors.top: testText.bottom
+        anchors.top: trackerTitle.bottom
         color: "blue"
 
         ListView {
             id: listView
             height: parent.height - 2
             width: parent.width - 2
-            x: 5
+            x: 1
             y: 1
             anchors.horizontalCenter: parent.horizontalCenter
-            model: 100
             clip: true
+
+            model: FileTrackerModel{
+                id: fileTrackerModel
+                list: fileTracker
+
+            }
 
             delegate:
                 Rectangle {
@@ -40,7 +47,7 @@ Item {
                     spacing: 3
                     Text {
                         id: trackerText
-                        text: qsTr("test")
+                        text: model.path
                         width: listView.width - 70
                         leftPadding: 5
 
@@ -61,11 +68,11 @@ Item {
                         background: Rectangle {
                             radius: 7
                             color: "transparent"
-                            //                            border.color: "black"
-                            //                            border.width: 1
                         }
 
                         onClicked: {
+                            console.log(index)
+                            fileTracker.removeItemAt(index);
                         }
                     }
                 }

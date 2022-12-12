@@ -2,6 +2,8 @@ import QtQuick 2.15
 import QtQuick.Dialogs
 import QtQuick.Controls
 
+import FileWatcher
+
 Item {
     FolderDialog {
         id: fileDialog
@@ -51,8 +53,9 @@ Item {
             }
 
             onClicked: {
+                console.log(fileDialogTextField.text);
+                fileTracker.appendItem(qsTr(fileDialogTextField.text));
                 fileDialogTextField.text = "Add path to watch";
-                // add to ListView
             }
         }
     }

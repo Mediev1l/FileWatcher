@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>FileDialogComponent.qml</file>
         <file>FileTrackerComponent.qml</file>
+        <file>TimestampComponent.qml</file>
     </qresource>
 </RCC>
