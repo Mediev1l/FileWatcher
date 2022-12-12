@@ -30,6 +30,7 @@ Item {
             y: 1
             anchors.horizontalCenter: parent.horizontalCenter
             clip: true
+            boundsBehavior: Flickable.StopAtBounds
 
             model: FileTrackerModel{
                 id: fileTrackerModel

@@ -33,6 +33,14 @@ Window {
     }
 
     TimestampComponent {
+        id: timestampComponent
+        width: mainWindow.width * 0.9
+        height: mainWindow.height * 0.3
 
+        anchors {
+            top: fileTrackerComponent.bottom
+            horizontalCenter: parent.horizontalCenter
+            topMargin: 20
+        }
     }
 }

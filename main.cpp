@@ -4,6 +4,7 @@
 
 #include "filetrackermodel.h"
 #include "filetracker.h"
+#include "timestampmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +15,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<FileTrackerModel>("FileWatcher", 1, 0, "FileTrackerModel");
+    qmlRegisterType<TimestampModel>("FileWatcher", 1, 0, "TimestampModel");
     qmlRegisterUncreatableType<FileTracker>("FileWatcher", 1, 0, "FileTracker", QStringLiteral("Should not create in QML"));
 
     FileTracker fileTracker;

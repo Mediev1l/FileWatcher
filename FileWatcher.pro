@@ -9,7 +9,8 @@ CONFIG += c++11
 SOURCES += \
         filetracker.cpp \
         filetrackermodel.cpp \
-        main.cpp
+        main.cpp \
+        timestampmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -26,4 +27,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     filetracker.h \
-    filetrackermodel.h
+    filetrackermodel.h \
+    timestampmodel.h

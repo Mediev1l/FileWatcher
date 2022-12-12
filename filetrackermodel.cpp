@@ -28,28 +28,6 @@ QVariant FileTrackerModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-bool FileTrackerModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-    if(m_list) {
-        return false;
-    }
-    qDebug() << "setdata";
-
-    FileTrackerItem item = m_list->items().at(index.row());
-    switch (role) {
-    case pathRole:
-        item.path = value.toString();
-        break;
-    }
-
-    if (data(index, role) != value) {
-        // FIXME: Implement me!
-        emit dataChanged(index, index, {role});
-        return true;
-    }
-    return false;
-}
-
 Qt::ItemFlags FileTrackerModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
