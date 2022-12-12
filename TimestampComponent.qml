@@ -49,6 +49,7 @@ Item {
 
             model: TimestampModel {
                 id: timestampModel
+                list: timestamp
             }
             boundsBehavior: Flickable.StopAtBounds
 
@@ -59,12 +60,11 @@ Item {
                 border.width: 1
                 Text {
                     id: text
-                    text: "delegate"
+                    text: model.display
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
             }
-
         }
     }
 }

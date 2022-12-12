@@ -4,6 +4,8 @@
 #include <QAbstractTableModel>
 #include <QMap>
 
+#include "timestamp.h"
+
 struct headerInfo {
     QString name;
     float width;
@@ -12,7 +14,12 @@ struct headerInfo {
 class TimestampModel : public QAbstractTableModel
 {
     Q_OBJECT
+    Q_PROPERTY(Timestamp *list READ list WRITE setList)
 public:
+    enum {
+        displayRole,
+    };
+
     explicit TimestampModel(QObject *parent = nullptr);
 
     // Basic functionality:
@@ -24,12 +31,15 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-    // Add data:
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-    //    bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override;
+    virtual QHash<int, QByteArray> roleNames() const override;
+
+    Timestamp* list() const;
+    void setList(Timestamp* list);
 
 private:
     QMap<int, headerInfo> m_headerInfo;
+    Timestamp* m_list;
 };
 
 #endif // TIMESTAMPMODEL_H
