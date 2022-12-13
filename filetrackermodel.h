@@ -3,6 +3,7 @@
 
 #include <QAbstractListModel>
 #include "filetracker.h"
+#include "event.h"
 
 class FileTrackerModel : public QAbstractListModel
 {

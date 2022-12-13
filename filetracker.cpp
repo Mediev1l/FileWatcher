@@ -4,9 +4,6 @@
 FileTracker::FileTracker(QObject *parent)
     : QObject{parent}
 {
-    m_items.append({QString("test")});
-    m_items.append({QString("test")});
-    m_items.append({QString("test")});
 }
 
 QVector<FileTrackerItem> FileTracker::items()

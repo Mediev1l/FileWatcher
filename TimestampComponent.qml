@@ -35,8 +35,6 @@ Item {
             }
         }
 
-
-
         TableView {
             id: tableView
             height: parent.height - header.height - 1
@@ -51,6 +49,8 @@ Item {
                 id: timestampModel
                 list: timestamp
             }
+
+
             boundsBehavior: Flickable.StopAtBounds
 
             delegate: Rectangle {

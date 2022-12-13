@@ -31,11 +31,14 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+//    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     virtual QHash<int, QByteArray> roleNames() const override;
 
     Timestamp* list() const;
     void setList(Timestamp* list);
+
+public slots:
+    void addEvent(const Event& event);
 
 private:
     QMap<int, headerInfo> m_headerInfo;

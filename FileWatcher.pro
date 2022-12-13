@@ -12,7 +12,8 @@ SOURCES += \
         filetrackermodel.cpp \
         main.cpp \
         timestamp.cpp \
-        timestampmodel.cpp
+        timestampmodel.cpp \
+        watcher.cpp
 
 RESOURCES += qml.qrc
 
@@ -32,4 +33,5 @@ HEADERS += \
     filetracker.h \
     filetrackermodel.h \
     timestamp.h \
-    timestampmodel.h
+    timestampmodel.h \
+    watcher.h

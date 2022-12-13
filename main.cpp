@@ -6,6 +6,7 @@
 #include "filetracker.h"
 #include "timestampmodel.h"
 #include "timestamp.h"
+#include "watcher.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,10 +24,13 @@ int main(int argc, char *argv[])
 
     FileTracker fileTracker;
     Timestamp timestamp;
+    Watcher watcher;
 
     QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty(QStringLiteral("fileTracker"),&fileTracker);
-    engine.rootContext()->setContextProperty(QStringLiteral("timestamp"),&timestamp);
+    engine.rootContext()->setContextProperty(QStringLiteral("fileTracker"), &fileTracker);
+    engine.rootContext()->setContextProperty(QStringLiteral("timestamp"), &timestamp);
+    engine.rootContext()->setContextProperty(QStringLiteral("watcher"), &watcher);
+
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {

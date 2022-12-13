@@ -50,9 +50,6 @@ QVariant TimestampModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    qDebug() << "index column " << index.column();
-    qDebug() << "index row " << index.row();
-
     if(role == displayRole) {
         const auto& items = m_list->items().at(index.row());
         switch (index.column()) {
@@ -68,14 +65,6 @@ QVariant TimestampModel::data(const QModelIndex &index, int role) const
     }
 
     return QVariant();
-}
-
-bool TimestampModel::insertRows(int row, int count, const QModelIndex &parent)
-{
-    beginInsertRows(parent, row, row + count - 1);
-    // FIXME: Implement me!
-    endInsertRows();
-    return true;
 }
 
 QHash<int, QByteArray> TimestampModel::roleNames() const
@@ -115,4 +104,11 @@ void TimestampModel::setList(Timestamp *list)
     }
 
     endResetModel();
+}
+
+void TimestampModel::addEvent(const Event &event)
+{
+    if(m_list) {
+        m_list->appendItem(std::move(event));
+    }
 }

@@ -54,8 +54,15 @@ Item {
 
             onClicked: {
                 console.log(fileDialogTextField.text);
-                fileTracker.appendItem(qsTr(fileDialogTextField.text));
-                fileDialogTextField.text = "Add path to watch";
+
+
+                if(fileDialogTextField.text != "Add path to watch"){
+                    fileTracker.appendItem(fileDialogTextField.text);
+                    watcher.addPathToWatch(fileDialogTextField.text)
+                    fileDialogTextField.text = "Add path to watch";
+                }
+
+
             }
         }
     }
