@@ -1,5 +1,4 @@
 #include "watcher.h"
-#include "qdebug.h"
 #include <QDir>
 #include <QDirIterator>
 #include <QDateTime>
@@ -14,8 +13,10 @@ Watcher::Watcher(QObject *parent)
 
 void Watcher::addPathToWatch(QUrl path)
 {
-    m_watcher.addPath(path.toLocalFile());
-    m_files.emplaceBack(path.toLocalFile());
+    auto localFile = path.toLocalFile();
+    m_watcher.addPath(localFile);
+    m_files.emplaceBack(localFile);
+    m_roots.emplaceBack(localFile);
 
     scanFiles(path.toLocalFile());
 }
@@ -60,8 +61,8 @@ void Watcher::directoryHandler(const QString& path)
 
         for(const auto& p : intersect) {
             m_files.removeAll(p);
-            sendEvent(Event::Type::Deleted, p, !hasExtension(p));
             m_watcher.removePath(p);
+            sendEvent(Event::Type::Deleted, p, !hasExtension(p));
         }
     }
     // file is renamed
@@ -71,8 +72,8 @@ void Watcher::directoryHandler(const QString& path)
 
         for(const auto& p : oldFile) {
             m_files.removeAll(p);
-            sendEvent(Event::Type::Renamed, p, !hasExtension(p));
             m_watcher.removePath(p);
+            sendEvent(Event::Type::Renamed, p, !hasExtension(p));
         }
         scanFiles(absPath);
     }
@@ -85,10 +86,12 @@ void Watcher::trackFiles(bool value)
 
 void Watcher::removePathFromWatcher(QUrl path)
 {
-    auto paths = searchInSaved(path.toLocalFile());
-    paths.append(path.toLocalFile());
+    const auto localFile = path.toLocalFile();
+    auto paths = searchInSaved(localFile);
+    paths.append(localFile);
 
     m_watcher.removePaths(paths);
+    m_roots.removeAll(localFile);
     for(const auto& p : paths) {
         m_files.removeAll(p);
     }
@@ -148,6 +151,10 @@ void Watcher::sendEvent(Event::Type type, const QString& path, bool isFolder)
         qDebug() << "|New event| Type " << Event::typeToString(type) << " Path " << path << " Is Folder "
                  << isFolder << " Timestamp " << QDateTime::currentDateTime().time().toString();
         emit NewEvent({type, path, isFolder, QDateTime::currentDateTime().time().toString()});
+
+        if(type == Event::Type::Deleted) {
+            emit FileRemoved(getRoot(path));
+        }
     }
 }
 
@@ -160,5 +167,17 @@ QStringList Watcher::pathIntersect(const QStringList &left, const QStringList &r
         }
     }
 
+    return ret;
+}
+
+QString Watcher::getRoot(QString filePath)
+{
+    QString ret{};
+    for(const auto& root : m_roots) {
+        if(filePath.contains(root)){
+            ret = root;
+            break;
+        }
+    }
     return ret;
 }

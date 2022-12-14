@@ -5,7 +5,7 @@
 #include <QFileSystemWatcher>
 #include <QFileInfo>
 #include <QUrl>
-#include <QMutexLocker>
+#include <QMutex>
 
 #include "event.h"
 
@@ -17,6 +17,7 @@ public:
 
 signals:
     void NewEvent(const Event& ev);
+    void FileRemoved(const QString& path);
 
 public slots:
     void addPathToWatch(QUrl path);
@@ -28,18 +29,21 @@ public slots:
 private:
     // helpers
     void scanFiles(const QString& root);
+    void sendEvent(Event::Type type, const QString& path, bool isFolder);
+
     QStringList getFilesByDir(const QString& path);
     QStringList searchInSaved(QString p);
-    QString getAbsPath(const QString& path);
-    void sendEvent(Event::Type type, const QString& path, bool isFolder);
     QStringList pathIntersect(const QStringList& left, const QStringList& right);
+
+    QString getAbsPath(const QString& path);
+    QString getRoot(QString filePath);
 
 private:
     QFileSystemWatcher m_watcher;
     QStringList m_files;
+    QStringList m_roots;
     QMutex m_mutex;
     bool m_track;
-
 };
 
 #endif // WATCHER_H

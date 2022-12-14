@@ -3,7 +3,6 @@
 
 #include <QAbstractListModel>
 #include "filetracker.h"
-#include "event.h"
 
 class FileTrackerModel : public QAbstractListModel
 {
@@ -11,6 +10,7 @@ class FileTrackerModel : public QAbstractListModel
     Q_PROPERTY(FileTracker *list READ list WRITE setList)
 public:
     explicit FileTrackerModel(QObject *parent = nullptr);
+    ~FileTrackerModel();
 
     enum {
         pathRole = Qt::UserRole

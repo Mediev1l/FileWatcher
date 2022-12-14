@@ -7,6 +7,7 @@
 #include "timestampmodel.h"
 #include "timestamp.h"
 #include "watcher.h"
+#include "catdownloader.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,17 +22,22 @@ int main(int argc, char *argv[])
 
     qmlRegisterUncreatableType<FileTracker>("FileWatcher", 1, 0, "FileTracker", QStringLiteral("Should not create in QML"));
     qmlRegisterUncreatableType<Timestamp>("FileWatcher", 1, 0, "Timestamp", QStringLiteral("Should not create in QML"));
+    qmlRegisterUncreatableType<Watcher>("FileWatcher", 1, 0, "Watcher", QStringLiteral("Should not create in QML"));
+    qmlRegisterUncreatableType<CatDownloader>("FileWatcher", 1, 0, "CatDownloader", QStringLiteral("Should not create in QML"));
 
     FileTracker fileTracker;
     Timestamp timestamp;
     Watcher watcher;
+    CatDownloader catDownloader;
 
     Event::connect(&watcher, &Watcher::NewEvent, &timestamp, &Timestamp::appendItem);
+    Event::connect(&watcher, &Watcher::FileRemoved, &catDownloader, &CatDownloader::downloadCat);
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("fileTracker"), &fileTracker);
     engine.rootContext()->setContextProperty(QStringLiteral("timestamp"), &timestamp);
     engine.rootContext()->setContextProperty(QStringLiteral("watcher"), &watcher);
+    engine.rootContext()->setContextProperty(QStringLiteral("catDownloader"), &catDownloader);
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

@@ -1,5 +1,4 @@
 #include "filetracker.h"
-#include "qdebug.h"
 
 FileTracker::FileTracker(QObject *parent)
     : QObject{parent}

@@ -6,6 +6,13 @@ FileTrackerModel::FileTrackerModel(QObject *parent)
 {
 }
 
+FileTrackerModel::~FileTrackerModel()
+{
+    if(m_list){
+        delete m_list;
+    }
+}
+
 int FileTrackerModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid() || !m_list)

@@ -2,7 +2,6 @@
 #define TIMESTAMPMODEL_H
 
 #include <QAbstractTableModel>
-#include <QMap>
 
 #include "timestamp.h"
 
@@ -21,6 +20,7 @@ public:
     };
 
     explicit TimestampModel(QObject *parent = nullptr);
+    ~TimestampModel();
 
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -31,7 +31,6 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-//    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     virtual QHash<int, QByteArray> roleNames() const override;
 
     Timestamp* list() const;

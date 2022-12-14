@@ -1,5 +1,4 @@
 #include "timestamp.h"
-#include "qdebug.h"
 
 Timestamp::Timestamp(QObject *parent)
     : QObject{parent}

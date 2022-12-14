@@ -10,6 +10,14 @@ TimestampModel::TimestampModel(QObject *parent)
     m_headerInfo[3] = {"Timestamp", 0.25};
 }
 
+TimestampModel::~TimestampModel()
+{
+    if(m_list)
+    {
+        delete m_list;
+    }
+}
+
 int TimestampModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid() || !m_list)
