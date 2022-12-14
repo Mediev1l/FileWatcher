@@ -8,7 +8,7 @@ Window {
     width: 640
     height: 480
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("FileWatcher")
 
     FileDialogComponent {
         id: fileDialogComponent
@@ -37,12 +37,43 @@ Window {
     TimestampComponent {
         id: timestampComponent
         width: mainWindow.width * 0.9
-        height: mainWindow.height * 0.3
+        height: mainWindow.height * 0.45
 
         anchors {
             top: fileTrackerComponent.bottom
             horizontalCenter: parent.horizontalCenter
-            topMargin: 20
+            topMargin: 30
+        }
+    }
+
+    Row {
+        anchors {
+            top: timestampComponent.bottom
+            left: timestampComponent.left
+            topMargin: 10
+        }
+
+        spacing: 10
+
+        Button {
+            text: "Clear"
+            width: timestampComponent.width * 0.2
+
+            onPressed: timestamp.clearItems();
+        }
+
+        Button {
+            text: "Start"
+            width: timestampComponent.width * 0.2
+
+            onPressed: watcher.start();
+        }
+
+        Button {
+            text: "Stop"
+            width: timestampComponent.width * 0.2
+
+            onPressed: watcher.stop();
         }
     }
 }

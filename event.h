@@ -9,8 +9,8 @@ class Event : public QObject
 public:
     enum Type {
         Created,
-        Moved,
         Renamed,
+        Modified,
         Deleted
     };
 

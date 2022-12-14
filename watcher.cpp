@@ -2,42 +2,21 @@
 #include "qdebug.h"
 #include <QDir>
 #include <QDirIterator>
+#include <QSet>
 
 Watcher::Watcher(QObject *parent)
     : QObject{parent}
 {
-    m_watcher.disconnect(SIGNAL(directoryChanged(QString)));
-    //    connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, [&](QString val){ directoryHandler(val);});
-    connect(&m_watcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
-    m_watcher2 = new QFileSystemWatcher(this);
-    connect(m_watcher2, SIGNAL(directoryChanged(const QString&)), this, SLOT(directoryHandler(const QString&)));
-
+    connect(&m_watcher, &QFileSystemWatcher::fileChanged, this, &Watcher::fileChanged);
+    connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, &Watcher::directoryHandler);
 }
 
-void Watcher::addPathToWatch(QString path)
+void Watcher::addPathToWatch(QUrl path)
 {
-    // remove windows prefix
-    if(path.contains("file:///")) {
-        path = path.remove(0,8);
-    }
+    m_watcher.addPath(path.toLocalFile());
+    m_files.emplaceBack(path.toLocalFile());
 
-    //    qDebug() << "path added " << path;
-    m_watcher.addPath(std::move(path));
-    m_watcher2->addPath("D:/Test/Nowy folder");
-
-    if(!m_files.contains(QFileInfo(path))) {
-        m_files.emplaceBack(path);
-    }
-
-    m_files.emplaceBack(path);
-
-    scanFiles(path);
-
-    //    qDebug() << "files " << m_watcher.files();
-    //    qDebug() << "dirs " << m_watcher.directories();
-    //    qDebug() << "contai files " << m_watcher.files().contains("C:/Users/Asus/OneDrive");
-    //    qDebug() << "contai dirs " << m_watcher.directories().contains("C:/Users/Asus/OneDrive");
-    //    qDebug() << QFile::exists("C:/Users/Asus/OneDrive/Desktop/111x/ee.txt");
+    scanFiles(path.toLocalFile());
 }
 
 void Watcher::fileChanged(const QString& path)
@@ -48,23 +27,10 @@ void Watcher::fileChanged(const QString& path)
     auto files = getFilesByDir(absPath);
     auto saved = searchInSaved(absPath);
 
-    // file is missing
-    if(files.size() < saved.size()) {
-        qDebug() << "Deleted\n";
-
-        m_files.remove(getIndexByPath(path));
-        m_watcher.removePath(path);
-
-        //        //TODO remove all subdirectories from watcher
-        //        for(const auto& file : m_files) {
-        //            if(file.path() == )
-        //        }
-
-        // emit deleted
-    }
     // file has been modified
-    else {
+    if (files.size() == saved.size() && QFileInfo::exists(path)){
         qDebug() << "Modified\n";
+        sendEvent({Event::Type::Modified, path, false, "now"});
     }
 }
 
@@ -72,37 +38,60 @@ void Watcher::directoryHandler(const QString& path)
 {
     qDebug() << "Directory Changed Event" << path;
 
+    auto hasExtension = [&](const QString& p) -> bool {
+        return QFileInfo(p).suffix().size() > 0;
+    };
 
     auto absPath = getAbsPath(path);
     auto files = getFilesByDir(absPath);
     auto saved = searchInSaved(absPath);
 
-    //    qDebug() << files.size()  << " " << saved.size();
-    qDebug() << "files " << m_watcher.files();
-    qDebug() << "directories " << m_watcher.directories();
-
     // file has been created
     if(files.size() > saved.size()) {
-        qDebug() << "Created\n";
+        qDebug() << "Created";
+        auto intersect = pathIntersect(files, saved);
 
-        m_watcher.addPath(path);
-        if(!m_files.contains(QFileInfo(path))){
-            qDebug() << "working";
-            m_files.emplaceBack(path);
-            qDebug() << "size "<< m_files.size();
-
+        for(const auto& p : intersect) {
+            sendEvent({Event::Type::Created, p, !hasExtension(p), "now"});
+            m_watcher.addPath(p);
+            if(!m_files.contains(p)){
+                m_files.emplaceBack(p);
+            }
         }
-        scanFiles(path);
+    }
+    // file has been removed
+    else if(files.size() < saved.size()) {
+        qDebug() << "Deleted";
 
-        // emit created
-    } else if (!QFileInfo(path).exists()  && m_files.size() > 0) {
-        qDebug() << "Deleted\n";
+        auto intersect = pathIntersect(saved, files);
 
-        m_files.remove(getIndexByPath(path));
-        m_watcher.removePath(path);
+        for(const auto& p : intersect) {
+            auto index = getIndexByPath(p);
+            if(index != -1) {
+                m_files.removeAt(index);
+            }
 
-    } else {
-        return;
+            sendEvent({Event::Type::Deleted, p, !hasExtension(p), "now"});
+            m_watcher.removePath(p);
+        }
+    }
+    // file is renamed
+    else if(files.size() == saved.size()) {
+        qDebug() << "renamed";
+
+        auto oldFile = pathIntersect(saved, files);
+        auto newFile = pathIntersect(files, saved);
+
+        for(const auto& p : oldFile) {
+            auto index = getIndexByPath(p);
+            if(index != -1) {
+                m_files.removeAt(index);
+            }
+
+            sendEvent({Event::Type::Renamed, p, !hasExtension(p), "now"});
+            m_watcher.removePath(p);
+        }
+        scanFiles(absPath);
     }
 }
 
@@ -116,20 +105,20 @@ void Watcher::scanFiles(const QString& root)
     while(it.hasNext()) {
         auto path = it.next();
         m_watcher.addPath(path);
-        if(!m_files.contains(QFileInfo(path))) {
+        if(!m_files.contains(path)) {
             m_files.emplaceBack(path);
         }
     }
 }
 
-QVector<QFileInfo> Watcher::getFilesByDir(const QString& path)
+QStringList Watcher::getFilesByDir(const QString& path)
 {
     QDir dir(path);
     dir.setFilter( QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
 
     QDirIterator it = QDirIterator(dir);
 
-    QVector<QFileInfo> ret;
+    QStringList ret;
     while(it.hasNext()) {
         ret.emplaceBack(it.next());
     }
@@ -140,18 +129,18 @@ QVector<QFileInfo> Watcher::getFilesByDir(const QString& path)
 int Watcher::getIndexByPath(const QString &p)
 {
     for(int i = 0; i<m_files.size(); i++) {
-        if(m_files.at(i).filePath() == p){
+        if(QFileInfo(m_files.at(i)).filePath() == p){
             return i;
         }
     }
     return -1;
 }
 
-QVector<QFileInfo> Watcher::searchInSaved(QString p)
+QStringList Watcher::searchInSaved(QString p)
 {
-    QVector<QFileInfo> ret;
+    QStringList ret;
     for(const auto& val : m_files) {
-        if(val.absolutePath() == p){
+        if(QFileInfo(val).absolutePath() == p){
             ret.push_back(val);
         }
     }
@@ -162,4 +151,23 @@ QString Watcher::getAbsPath(const QString &path)
 {
     auto info = QFileInfo(path);
     return (info.isFile() || !info.exists()) ? info.absolutePath() : path;
+}
+
+void Watcher::sendEvent(const Event &event)
+{
+    if(m_track) {
+        emit NewEvent(event);
+    }
+}
+
+QStringList Watcher::pathIntersect(const QStringList &left, const QStringList &right)
+{
+    QStringList ret;
+    for(const auto& value : left){
+        if(!right.contains(value)) {
+            ret.append(value);
+        }
+    }
+
+    return ret;
 }

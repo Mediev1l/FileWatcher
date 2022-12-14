@@ -37,9 +37,6 @@ public:
     Timestamp* list() const;
     void setList(Timestamp* list);
 
-public slots:
-    void addEvent(const Event& event);
-
 private:
     QMap<int, headerInfo> m_headerInfo;
     Timestamp* m_list;

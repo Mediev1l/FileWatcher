@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
     Timestamp timestamp;
     Watcher watcher;
 
+    Event::connect(&watcher, &Watcher::NewEvent, &timestamp, &Timestamp::appendItem);
+
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("fileTracker"), &fileTracker);
     engine.rootContext()->setContextProperty(QStringLiteral("timestamp"), &timestamp);

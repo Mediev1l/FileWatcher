@@ -15,12 +15,12 @@ Item {
 
     Rectangle {
         width: parent.width
-        height: parent.height - 20
+        height: parent.height
         border.width: 1
         border.color: "black"
         radius: 5
         anchors.top: trackerTitle.bottom
-        color: "blue"
+//        color: "blue"
 
         ListView {
             id: listView

@@ -9,7 +9,7 @@ Item {
         id: fileDialog
 
         onAccepted: {
-            fileDialogTextField.text = currentFolder
+            fileDialogTextField.text = selectedFolder
         }
     }
 

@@ -19,8 +19,12 @@ signals:
     void preItemAppended();
     void postItemAppended();
 
+    void preItemsClear();
+    void postItemsClear();
+
 public slots:
     void appendItem(const Event& event);
+    void clearItems();
 
 private:
     QVector<Event> m_items;

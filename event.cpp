@@ -42,11 +42,11 @@ QString Event::typeToString(Type type)
     case Created:
         ret = "Created";
         break;
-    case Moved:
-        ret = "Moved";
-        break;
     case Renamed:
         ret = "Renamed";
+        break;
+    case Modified:
+        ret = "Modified";
         break;
     case Deleted:
         ret = "Deleted";

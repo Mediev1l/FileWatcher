@@ -6,7 +6,7 @@ Item {
     Rectangle {
         id: timestampRect
         width: parent.width
-        height: parent.height - 20
+        height: parent.height
         border.width: 1
         border.color: "black"
         radius: 5

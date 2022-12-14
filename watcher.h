@@ -4,13 +4,10 @@
 #include <QObject>
 #include <QFileSystemWatcher>
 #include <QFileInfo>
+#include <QUrl>
+#include <QMutexLocker>
 
 #include "event.h"
-
-//struct file {
-//    bool directory;
-//    QString path;
-//};
 
 class Watcher : public QObject
 {
@@ -22,22 +19,25 @@ signals:
     void NewEvent(const Event& ev);
 
 public slots:
-    void addPathToWatch(QString path);
+    void addPathToWatch(QUrl path);
     void fileChanged(const QString& path);
     void directoryHandler(const QString& path);
 
 private:
     // helpers
     void scanFiles(const QString& root);
-    QVector<QFileInfo> getFilesByDir(const QString& path);
+    QStringList getFilesByDir(const QString& path);
     int getIndexByPath(const QString& p);
-    QVector<QFileInfo> searchInSaved(QString p);
+    QStringList searchInSaved(QString p);
     QString getAbsPath(const QString& path);
+    void sendEvent(const Event& event);
+    QStringList pathIntersect(const QStringList& left, const QStringList& right);
 
 private:
     QFileSystemWatcher m_watcher;
-    QFileSystemWatcher* m_watcher2;
-    QVector<QFileInfo> m_files;
+    QStringList m_files;
+    QMutex m_mutex;
+    bool m_track{true};
 
 };
 

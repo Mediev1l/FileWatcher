@@ -101,14 +101,16 @@ void TimestampModel::setList(Timestamp *list)
             endInsertRows();
         });
 
+        connect(m_list, &Timestamp::preItemsClear, this, [=](){
+            beginResetModel();
+        });
+
+        connect(m_list, &Timestamp::postItemsClear, this, [=](){
+            endResetModel();
+        });
+
     }
 
     endResetModel();
 }
 
-void TimestampModel::addEvent(const Event &event)
-{
-    if(m_list) {
-        m_list->appendItem(std::move(event));
-    }
-}
