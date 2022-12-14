@@ -20,7 +20,6 @@ Item {
         border.color: "black"
         radius: 5
         anchors.top: trackerTitle.bottom
-//        color: "blue"
 
         ListView {
             id: listView
@@ -72,8 +71,8 @@ Item {
                         }
 
                         onClicked: {
-                            console.log(index)
                             fileTracker.removeItemAt(index);
+                            watcher.removePathFromWatcher(trackerText.text);
                         }
                     }
                 }

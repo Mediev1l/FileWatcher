@@ -28,8 +28,6 @@ void FileTracker::appendItem(QString path)
         return;
     }
 
-
-    qDebug() << path;
     emit preItemAppended();
 
     FileTrackerItem item;

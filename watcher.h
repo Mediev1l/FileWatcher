@@ -20,24 +20,25 @@ signals:
 
 public slots:
     void addPathToWatch(QUrl path);
-    void fileChanged(const QString& path);
+    void removePathFromWatcher(QUrl path);
+    void fileHandler(const QString& path);
     void directoryHandler(const QString& path);
+    void trackFiles(bool value);
 
 private:
     // helpers
     void scanFiles(const QString& root);
     QStringList getFilesByDir(const QString& path);
-    int getIndexByPath(const QString& p);
     QStringList searchInSaved(QString p);
     QString getAbsPath(const QString& path);
-    void sendEvent(const Event& event);
+    void sendEvent(Event::Type type, const QString& path, bool isFolder);
     QStringList pathIntersect(const QStringList& left, const QStringList& right);
 
 private:
     QFileSystemWatcher m_watcher;
     QStringList m_files;
     QMutex m_mutex;
-    bool m_track{true};
+    bool m_track;
 
 };
 

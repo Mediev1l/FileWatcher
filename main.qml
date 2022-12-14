@@ -66,14 +66,14 @@ Window {
             text: "Start"
             width: timestampComponent.width * 0.2
 
-            onPressed: watcher.start();
+            onPressed: watcher.trackFiles(true);
         }
 
         Button {
             text: "Stop"
             width: timestampComponent.width * 0.2
 
-            onPressed: watcher.stop();
+            onPressed: watcher.trackFiles(false);
         }
     }
 }

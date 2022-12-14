@@ -21,7 +21,6 @@ Item {
         TextField {
             id: fileDialogTextField
             text: "Add path to watch"
-            //            anchors.verticalCenter: parent.verticalCenter
             background: Rectangle {
                 radius: 7
                 color: "white"
@@ -53,9 +52,6 @@ Item {
             }
 
             onClicked: {
-                console.log(fileDialogTextField.text);
-
-
                 if(fileDialogTextField.text != "Add path to watch"){
                     fileTracker.appendItem(fileDialogTextField.text);
                     watcher.addPathToWatch(fileDialogTextField.text)

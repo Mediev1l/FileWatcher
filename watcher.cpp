@@ -2,12 +2,13 @@
 #include "qdebug.h"
 #include <QDir>
 #include <QDirIterator>
-#include <QSet>
+#include <QDateTime>
 
 Watcher::Watcher(QObject *parent)
     : QObject{parent}
+    , m_track{true}
 {
-    connect(&m_watcher, &QFileSystemWatcher::fileChanged, this, &Watcher::fileChanged);
+    connect(&m_watcher, &QFileSystemWatcher::fileChanged, this, &Watcher::fileHandler);
     connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, &Watcher::directoryHandler);
 }
 
@@ -19,25 +20,20 @@ void Watcher::addPathToWatch(QUrl path)
     scanFiles(path.toLocalFile());
 }
 
-void Watcher::fileChanged(const QString& path)
+void Watcher::fileHandler(const QString& path)
 {
-    qDebug() << "File Changed Event" << path;
-
     auto absPath = getAbsPath(path);
     auto files = getFilesByDir(absPath);
     auto saved = searchInSaved(absPath);
 
     // file has been modified
     if (files.size() == saved.size() && QFileInfo::exists(path)){
-        qDebug() << "Modified\n";
-        sendEvent({Event::Type::Modified, path, false, "now"});
+        sendEvent(Event::Type::Modified, path, false);
     }
 }
 
 void Watcher::directoryHandler(const QString& path)
 {
-    qDebug() << "Directory Changed Event" << path;
-
     auto hasExtension = [&](const QString& p) -> bool {
         return QFileInfo(p).suffix().size() > 0;
     };
@@ -48,11 +44,10 @@ void Watcher::directoryHandler(const QString& path)
 
     // file has been created
     if(files.size() > saved.size()) {
-        qDebug() << "Created";
         auto intersect = pathIntersect(files, saved);
 
         for(const auto& p : intersect) {
-            sendEvent({Event::Type::Created, p, !hasExtension(p), "now"});
+            sendEvent(Event::Type::Created, p, !hasExtension(p));
             m_watcher.addPath(p);
             if(!m_files.contains(p)){
                 m_files.emplaceBack(p);
@@ -61,37 +56,41 @@ void Watcher::directoryHandler(const QString& path)
     }
     // file has been removed
     else if(files.size() < saved.size()) {
-        qDebug() << "Deleted";
-
         auto intersect = pathIntersect(saved, files);
 
         for(const auto& p : intersect) {
-            auto index = getIndexByPath(p);
-            if(index != -1) {
-                m_files.removeAt(index);
-            }
-
-            sendEvent({Event::Type::Deleted, p, !hasExtension(p), "now"});
+            m_files.removeAll(p);
+            sendEvent(Event::Type::Deleted, p, !hasExtension(p));
             m_watcher.removePath(p);
         }
     }
     // file is renamed
     else if(files.size() == saved.size()) {
-        qDebug() << "renamed";
-
         auto oldFile = pathIntersect(saved, files);
         auto newFile = pathIntersect(files, saved);
 
         for(const auto& p : oldFile) {
-            auto index = getIndexByPath(p);
-            if(index != -1) {
-                m_files.removeAt(index);
-            }
-
-            sendEvent({Event::Type::Renamed, p, !hasExtension(p), "now"});
+            m_files.removeAll(p);
+            sendEvent(Event::Type::Renamed, p, !hasExtension(p));
             m_watcher.removePath(p);
         }
         scanFiles(absPath);
+    }
+}
+
+void Watcher::trackFiles(bool value)
+{
+    m_track = value;
+}
+
+void Watcher::removePathFromWatcher(QUrl path)
+{
+    auto paths = searchInSaved(path.toLocalFile());
+    paths.append(path.toLocalFile());
+
+    m_watcher.removePaths(paths);
+    for(const auto& p : paths) {
+        m_files.removeAll(p);
     }
 }
 
@@ -126,16 +125,6 @@ QStringList Watcher::getFilesByDir(const QString& path)
     return ret;
 }
 
-int Watcher::getIndexByPath(const QString &p)
-{
-    for(int i = 0; i<m_files.size(); i++) {
-        if(QFileInfo(m_files.at(i)).filePath() == p){
-            return i;
-        }
-    }
-    return -1;
-}
-
 QStringList Watcher::searchInSaved(QString p)
 {
     QStringList ret;
@@ -153,10 +142,12 @@ QString Watcher::getAbsPath(const QString &path)
     return (info.isFile() || !info.exists()) ? info.absolutePath() : path;
 }
 
-void Watcher::sendEvent(const Event &event)
+void Watcher::sendEvent(Event::Type type, const QString& path, bool isFolder)
 {
     if(m_track) {
-        emit NewEvent(event);
+        qDebug() << "|New event| Type " << Event::typeToString(type) << " Path " << path << " Is Folder "
+                 << isFolder << " Timestamp " << QDateTime::currentDateTime().time().toString();
+        emit NewEvent({type, path, isFolder, QDateTime::currentDateTime().time().toString()});
     }
 }
 
