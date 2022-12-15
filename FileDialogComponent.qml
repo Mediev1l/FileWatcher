@@ -21,10 +21,11 @@ Item {
         TextField {
             id: fileDialogTextField
             text: "Add path to watch"
+            color: fileDialogTextField.hovered ? "orange" : "white"
             background: Rectangle {
                 radius: 7
-                color: "white"
-                border.color: "black"
+                color: "transparent"
+                border.color: fileDialogTextField.hovered ? "orange" : "white"
                 border.width: 1
             }
             width: parent.width - 70
@@ -40,15 +41,23 @@ Item {
         }
 
         Button {
-            text: "Add"
+            id: addButton
             width: 70
             height: 20
+            flat: true
 
             background: Rectangle {
                 radius: 7
-                color: "white"
-                border.color: "black"
+                color: "transparent"
+                border.color: addButton.hovered ? "orange" : "white"
                 border.width: 1
+
+                Text {
+                    text: "Add"
+                    color: addButton.hovered ? "orange" : "white"
+                    font.bold: true
+                    anchors.centerIn: parent
+                }
             }
 
             onClicked: {

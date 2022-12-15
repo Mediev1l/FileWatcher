@@ -12,12 +12,14 @@
 class Watcher : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool m_track MEMBER m_track NOTIFY trackChanged)
 public:
     explicit Watcher(QObject *parent = nullptr);
 
 signals:
-    void NewEvent(const Event& ev);
-    void FileRemoved(const QString& path);
+    void newEvent(const Event& ev);
+    void fileRemoved(const QString& path);
+    void trackChanged();
 
 public slots:
     void addPathToWatch(QUrl path);

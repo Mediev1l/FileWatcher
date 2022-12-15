@@ -30,8 +30,8 @@ int main(int argc, char *argv[])
     Watcher watcher;
     CatDownloader catDownloader;
 
-    Event::connect(&watcher, &Watcher::NewEvent, &timestamp, &Timestamp::appendItem);
-    Event::connect(&watcher, &Watcher::FileRemoved, &catDownloader, &CatDownloader::downloadCat);
+    Event::connect(&watcher, &Watcher::newEvent, &timestamp, &Timestamp::appendItem);
+    Event::connect(&watcher, &Watcher::fileRemoved, &catDownloader, &CatDownloader::downloadCat);
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("fileTracker"), &fileTracker);

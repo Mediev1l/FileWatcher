@@ -12,10 +12,6 @@ TimestampModel::TimestampModel(QObject *parent)
 
 TimestampModel::~TimestampModel()
 {
-    if(m_list)
-    {
-        delete m_list;
-    }
 }
 
 int TimestampModel::rowCount(const QModelIndex &parent) const

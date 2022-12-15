@@ -150,10 +150,10 @@ void Watcher::sendEvent(Event::Type type, const QString& path, bool isFolder)
     if(m_track) {
         qDebug() << "|New event| Type " << Event::typeToString(type) << " Path " << path << " Is Folder "
                  << isFolder << " Timestamp " << QDateTime::currentDateTime().time().toString();
-        emit NewEvent({type, path, isFolder, QDateTime::currentDateTime().time().toString()});
+        emit newEvent({type, path, isFolder, QDateTime::currentDateTime().time().toString()});
 
         if(type == Event::Type::Deleted) {
-            emit FileRemoved(getRoot(path));
+            emit fileRemoved(getRoot(path));
         }
     }
 }

@@ -9,6 +9,8 @@ Window {
     height: 480
     visible: true
     title: qsTr("FileWatcher")
+    color: "#44454a"
+
 
     FileDialogComponent {
         id: fileDialogComponent
@@ -56,24 +58,53 @@ Window {
         spacing: 10
 
         Button {
-            text: "Clear"
+            id: clearButton
             width: timestampComponent.width * 0.2
+            height: 20
+            flat: true
 
             onPressed: timestamp.clearItems();
+
+            background: Rectangle {
+                radius: 7
+                color: "transparent"
+                border.color: clearButton.hovered ? "orange" : "white"
+                border.width: 1
+
+                Text {
+                    text: "Clear"
+                    color: clearButton.hovered ? "orange" : "white"
+                    font.bold: true
+                    anchors.centerIn: parent
+                }
+            }
         }
 
         Button {
-            text: "Start"
+            id: trackButton
             width: timestampComponent.width * 0.2
+            height: 20
+            flat: true
 
-            onPressed: watcher.trackFiles(true);
-        }
+            onPressed: {
+                trackerText.text = watcher.m_track ?  "Start" : "Stop";
+                watcher.trackFiles(!watcher.m_track);
+            }
 
-        Button {
-            text: "Stop"
-            width: timestampComponent.width * 0.2
+            background: Rectangle {
+                radius: 7
+                color: "transparent"
+                border.color: trackButton.hovered ? "orange" : "white"
+                border.width: 1
 
-            onPressed: watcher.trackFiles(false);
+                Text {
+                    id: trackerText
+                    text: "Stop"
+                    color: trackButton.hovered ? "orange" : "white"
+                    font.bold: true
+                    anchors.centerIn: parent
+                }
+            }
         }
     }
 }

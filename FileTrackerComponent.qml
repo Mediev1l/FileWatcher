@@ -11,15 +11,18 @@ Item {
         height: 20
         width: 5
         leftPadding: 5
+        color: "white"
+        font.bold: true
     }
 
     Rectangle {
         width: parent.width
         height: parent.height
         border.width: 1
-        border.color: "black"
-        radius: 5
+        border.color: "white"
+        radius: 8
         anchors.top: trackerTitle.bottom
+        color: "transparent"
 
         ListView {
             id: listView
@@ -37,37 +40,43 @@ Item {
 
             }
 
-            delegate:
-                Rectangle {
-                color: "#d7d7e2"
+            delegate: Rectangle {
+                id: delegateRect
+                color: "transparent"
                 width: listView.width
                 height: 20
 
+
                 Row {
                     spacing: 3
+
                     Text {
                         id: trackerText
                         text: model.path
                         width: listView.width - 70
-                        leftPadding: 5
-
-                        Rectangle {
-                            color: "red"
-                            width: parent.width * 0.98
-                            height: 1
-                            anchors.top: parent.bottom
-                            anchors.horizontalCenter: parent.horizontalCenter
-                        }
+                        leftPadding: 6
+                        topPadding: 2
+                        color: "white"
+                        clip: true
                     }
 
                     Button {
-                        text: "Remove"
+                        id: removeButton
                         width: 70
                         height: 20
+                        flat: true
 
                         background: Rectangle {
                             radius: 7
                             color: "transparent"
+
+                            Text {
+                                text: "Remove"
+                                color: removeButton.hovered ? "orange" : "white"
+                                font.bold: true
+                                anchors.centerIn: parent
+                                bottomPadding: 2
+                            }
                         }
 
                         onClicked: {
@@ -76,7 +85,16 @@ Item {
                         }
                     }
                 }
+
+                Rectangle {
+                    color: "orange"
+                    width: delegateRect.width * 0.98
+                    height: 1
+                    anchors.top: parent.bottom
+                    anchors.horizontalCenter: delegateRect.horizontalCenter
+                }
             }
+
         }
 
     }
